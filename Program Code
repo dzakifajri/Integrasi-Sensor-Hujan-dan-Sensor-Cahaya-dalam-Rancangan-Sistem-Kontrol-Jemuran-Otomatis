@@ -1,0 +1,53 @@
+#include <Servo.h>
+#include <Wire.h> 
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+Servo myservo;     // variable untuk menyimpan posisi data
+#define sensor_DO A0  
+const int sensorPin = 2;  // Pin digital tempat output komparator dihubungkan
+int pos = 00;
+int sensorValuev = 0;
+         
+void setup(){ 
+  myservo.attach(3); //sinyal data kabel motor servo dikonekan di pin 3 Arduino
+  Serial.begin(9600);
+  pinMode(sensorPin, INPUT);  // Set pin sensor sebagai input
+  lcd.begin();	
+	lcd.backlight();
+} 
+
+void loop(){ 
+  myservo.write(90);
+  int val = digitalRead(sensor_DO);
+  sensorValuev = digitalRead(sensorPin);  // Membaca nilai dari pin sensor
+
+  if (val == 1 && sensorValuev == HIGH) 
+  {
+    Serial.println("   Status: Dry And Overcast");
+    myservo.write(0);
+    lcd.clear();
+    lcd.setCursor(0, 0);
+	  lcd.print("Dry And Overcast");
+  } 
+  else if (val == 1 && sensorValuev == LOW)
+  {
+    Serial.println("   Status: Dry And Bright");
+    myservo.write(90);
+    lcd.clear();
+    lcd.setCursor(0, 0);
+	  lcd.print("Dry And Bright");
+    lcd.setCursor(0, 1);
+	  lcd.print("Happy Nice Day");
+  }
+  else
+  {
+    Serial.println("   Status: Wet");
+    myservo.write(0);
+    lcd.clear();
+    lcd.setCursor(0, 0);
+	  lcd.print("Wet");
+  }
+  delay(1000);
+
+}
